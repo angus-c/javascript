@@ -52,6 +52,7 @@
     + `string`
     + `number`
     + `boolean`
+    + `symbol`
     + `null`
     + `undefined`
 
@@ -82,43 +83,26 @@
 
 ## References
 
-  - [2.1](#2.1) <a name='2.1'></a> Use `const` for all of your references; avoid using `var`.
-
-  > Why? This ensures that you can't reassign your references (mutation), which can lead to bugs and difficult to comprehend code.
+  - [2.1](#2.1) <a name='2.1'></a> Use `const` for for references you don't intent to reassign; otherwise use `let`.
 
     ```javascript
-    // bad
-    var a = 1;
-    var b = 2;
+    let a;
+    if (condition) {
+      a = 2;
+    } else {
+      a = 3;
+    }  
 
-    // good
-    const a = 1;
-    const b = 2;
-    ```
-
-  - [2.2](#2.2) <a name='2.2'></a> If you must mutate references, use `let` instead of `var`.
-
-  > Why? `let` is block-scoped rather than function-scoped like `var`.
-
-    ```javascript
-    // bad
-    var count = 1;
-    if (true) {
-      count += 1;
-    }
-
-    // good, use the let.
-    let count = 1;
-    if (true) {
-      count += 1;
-    }
+    // not to be reassigned
+    const global = window;
+    const teardown = function() {/*..*/};
     ```
 
   - [2.3](#2.3) <a name='2.3'></a> Note that both `let` and `const` are block-scoped.
 
     ```javascript
     // const and let only exist in the blocks they are defined in.
-    {
+    while (condition) {
       let a = 1;
       const b = 1;
     }
@@ -140,45 +124,8 @@
     const item = {};
     ```
 
-  - [3.2](#3.2) <a name='3.2'></a> If your code will be executed in browsers in script context, don't use [reserved words](http://es5.github.io/#x7.6.1) as keys. It won't work in IE8. [More info](https://github.com/airbnb/javascript/issues/61). It’s OK to use them in ES6 modules and server-side code.
-
-    ```javascript
-    // bad
-    const superman = {
-      default: { clark: 'kent' },
-      private: true,
-    };
-
-    // good
-    const superman = {
-      defaults: { clark: 'kent' },
-      hidden: true,
-    };
-    ```
-
-  - [3.3](#3.3) <a name='3.3'></a> Use readable synonyms in place of reserved words.
-
-    ```javascript
-    // bad
-    const superman = {
-      class: 'alien',
-    };
-
-    // bad
-    const superman = {
-      klass: 'alien',
-    };
-
-    // good
-    const superman = {
-      type: 'alien',
-    };
-    ```
-
   <a name="es6-computed-properties"></a>
   - [3.4](#3.4) <a name='3.4'></a> Use computed property names when creating objects with dynamic property names.
-
-  > Why? They allow you to define all the properties of an object in one place.
 
     ```javascript
 
@@ -186,14 +133,14 @@
       return `a key named ${k}`;
     }
 
-    // bad
+    // es 5
     const obj = {
       id: 5,
       name: 'San Francisco',
     };
     obj[getKey('enabled')] = true;
 
-    // good
+    // es 6
     const obj = {
       id: 5,
       name: 'San Francisco',
@@ -205,7 +152,7 @@
   - [3.5](#3.5) <a name='3.5'></a> Use object method shorthand.
 
     ```javascript
-    // bad
+    // es 5
     const atom = {
       value: 1,
 
@@ -214,75 +161,42 @@
       },
     };
 
-    // good
+    // es 6
     const atom = {
       value: 1,
 
       addValue(value) {
         return atom.value + value;
-      },
+      }
     };
     ```
 
   <a name="es6-object-concise"></a>
-  - [3.6](#3.6) <a name='3.6'></a> Use property value shorthand.
-
-  > Why? It is shorter to write and descriptive.
+  - [3.6](#3.6) <a name='3.6'></a> You can use property value shorthand.
 
     ```javascript
     const lukeSkywalker = 'Luke Skywalker';
 
-    // bad
+    // es 5
     const obj = {
       lukeSkywalker: lukeSkywalker,
     };
 
-    // good
+    // es 6
     const obj = {
       lukeSkywalker,
     };
     ```
-
-  - [3.7](#3.7) <a name='3.7'></a> Group your shorthand properties at the beginning of your object declaration.
-
-  > Why? It's easier to tell which properties are using the shorthand.
-
-    ```javascript
-    const anakinSkywalker = 'Anakin Skywalker';
-    const lukeSkywalker = 'Luke Skywalker';
-
-    // bad
-    const obj = {
-      episodeOne: 1,
-      twoJediWalkIntoACantina: 2,
-      lukeSkywalker,
-      episodeThree: 3,
-      mayTheFourth: 4,
-      anakinSkywalker,
-    };
-
-    // good
-    const obj = {
-      lukeSkywalker,
-      anakinSkywalker,
-      episodeOne: 1,
-      twoJediWalkIntoACantina: 2,
-      episodeThree: 3,
-      mayTheFourth: 4,
-    };
-    ```
-
-**[⬆ back to top](#table-of-contents)**
 
 ## Arrays
 
-  - [4.1](#4.1) <a name='4.1'></a> Use the literal syntax for array creation.
+  - [4.1](#4.1) <a name='4.1'></a> It's generally easier to use the literal syntax for array creation. 
 
     ```javascript
-    // bad
-    const items = new Array();
+    // occasionally you may need to create an empty array of fixed length
+    const items = new Array(5);
 
-    // good
+    // otherwise use literal syntax
     const items = [];
     ```
 
@@ -290,7 +204,6 @@
 
     ```javascript
     const someStack = [];
-
 
     // bad
     someStack[someStack.length] = 'abracadabra';
@@ -303,7 +216,7 @@
   - [4.3](#4.3) <a name='4.3'></a> Use array spreads `...` to copy arrays.
 
     ```javascript
-    // bad
+    // long form
     const len = items.length;
     const itemsCopy = [];
     let i;
@@ -312,7 +225,7 @@
       itemsCopy[i] = items[i];
     }
 
-    // good
+    // with spread
     const itemsCopy = [...items];
     ```
   - [4.4](#4.4) <a name='4.4'></a> To convert an array-like object to an array, use Array#from.
@@ -326,12 +239,10 @@
 
 ## Destructuring
 
-  - [5.1](#5.1) <a name='5.1'></a> Use object destructuring when accessing and using multiple properties of an object.
-
-  > Why? Destructuring saves you from creating temporary references for those properties.
+  - [5.1](#5.1) <a name='5.1'></a> You can use object destructuring.
 
     ```javascript
-    // bad
+    // es 5
     function getFullName(user) {
       const firstName = user.firstName;
       const lastName = user.lastName;
@@ -339,28 +250,22 @@
       return `${firstName} ${lastName}`;
     }
 
-    // good
-    function getFullName(obj) {
-      const { firstName, lastName } = obj;
-      return `${firstName} ${lastName}`;
-    }
-
-    // best
+    // es 6
     function getFullName({ firstName, lastName }) {
       return `${firstName} ${lastName}`;
     }
     ```
 
-  - [5.2](#5.2) <a name='5.2'></a> Use array destructuring.
+  - [5.2](#5.2) <a name='5.2'></a> You can use array destructuring.
 
     ```javascript
     const arr = [1, 2, 3, 4];
 
-    // bad
+    // es 5
     const first = arr[0];
     const second = arr[1];
 
-    // good
+    // es 6
     const [first, second] = arr;
     ```
 
@@ -369,16 +274,16 @@
   > Why? You can add new properties over time or change the order of things without breaking call sites.
 
     ```javascript
-    // bad
+    // with array destructuring
     function processInput(input) {
       // then a miracle occurs
       return [left, right, top, bottom];
     }
 
     // the caller needs to think about the order of return data
-    const [left, __, top] = processInput(input);
+    const [left, , top] = processInput(input);
 
-    // good
+    // with object destructring
     function processInput(input) {
       // then a miracle occurs
       return { left, right, top, bottom };
@@ -393,18 +298,8 @@
 
 ## Strings
 
-  - [6.1](#6.1) <a name='6.1'></a> Use single quotes `''` for strings.
-
-    ```javascript
-    // bad
-    const name = "Capt. Janeway";
-
-    // good
-    const name = 'Capt. Janeway';
-    ```
-
-  - [6.2](#6.2) <a name='6.2'></a> Strings longer than 80 characters should be written across multiple lines using string concatenation.
-  - [6.3](#6.3) <a name='6.3'></a> Note: If overused, long strings with concatenation could impact performance. [jsPerf](http://jsperf.com/ya-string-concat) & [Discussion](https://github.com/airbnb/javascript/issues/40).
+  - [6.1](#6.1) <a name='6.1'></a> Use single quotes `'` for strings.
+  - [6.2](#6.2) <a name='6.2'></a> Strings longer than 80 characters should be written across multiple lines using string back tick syntax.
 
     ```javascript
     // bad
@@ -417,28 +312,23 @@
     fast.';
 
     // good
-    const errorMessage = 'This is a super long error that was thrown because ' +
-      'of Batman. When you stop to think about how Batman had anything to do ' +
-      'with this, you would get nowhere fast.';
+    const errorMessage = `This is a super long error that was thrown because
+of Batman. When you stop to think about how Batman had anything to do
+with this, you would get nowhere fast.`;
     ```
 
   <a name="es6-template-literals"></a>
-  - [6.4](#6.4) <a name='6.4'></a> When programmatically building up strings, use template strings instead of concatenation.
+  - [6.4](#6.4) <a name='6.4'></a> When programmatically assembling strings, use template strings instead of concatenation.
 
   > Why? Template strings give you a readable, concise syntax with proper newlines and string interpolation features.
 
     ```javascript
-    // bad
-    function sayHi(name) {
-      return 'How are you, ' + name + '?';
-    }
-
-    // bad
+    // es 5
     function sayHi(name) {
       return ['How are you, ', name, '?'].join();
     }
 
-    // good
+    // es 6
     function sayHi(name) {
       return `How are you, ${name}?`;
     }
@@ -449,16 +339,19 @@
 
 ## Functions
 
-  - [7.1](#7.1) <a name='7.1'></a> Use function declarations instead of function expressions.
+  - [7.1](#7.1) <a name='7.1'></a> Choose function declarations or function expressions based on your goal.
 
-  > Why? Function declarations are named, so they're easier to identify in call stacks. Also, the whole body of a function declaration is hoisted, whereas only the reference of a function expression is hoisted. This rule makes it possible to always use [Arrow Functions](#arrow-functions) in place of function expressions.
+  > Because function declarations are hoisted they are a great way to hide implementation detail at the bottom of the page. They're also named which makes debugging easier (though, since IE8 named function expressions are entirely safe).
+  
+  > Function expressions are suitable for functional scenarios such as function passing (e.g., in higher order functions). They're also necessary for creation of immediately invoked function expressions
 
     ```javascript
-    // bad
-    const foo = function () {
-    };
+    export default foo(x);
+    
+    // function declaration used to hide implementation detail
+    const foo function () {/*/..*/};
 
-    // good
+    // function expression used in higher order function (in this case an arrow functions)
     function foo() {
     }
     ```
