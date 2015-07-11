@@ -83,7 +83,7 @@
 
 ## References
 
-  - [2.1](#2.1) <a name='2.1'></a> Use `const` for for references you don't intent to reassign; otherwise use `let`.
+  - [2.1](#2.1) <a name='2.1'></a> Use `const` for for references you don't intend to reassign; otherwise use `let`.
 
     ```javascript
     let a;
@@ -117,10 +117,10 @@
   - [3.1](#3.1) <a name='3.1'></a> Use the literal syntax for object creation.
 
     ```javascript
-    // bad
+    // unecessary
     const item = new Object();
 
-    // good
+    // easier
     const item = {};
     ```
 
@@ -205,10 +205,10 @@
     ```javascript
     const someStack = [];
 
-    // bad
+    // unecessary
     someStack[someStack.length] = 'abracadabra';
 
-    // good
+    // easier
     someStack.push('abracadabra');
     ```
 
@@ -342,24 +342,21 @@ with this, you would get nowhere fast.`;
   - [7.1](#7.1) <a name='7.1'></a> Choose function declarations or function expressions based on your goal.
 
   > Because function declarations are hoisted they are a great way to hide implementation detail at the bottom of the page. They're also named which makes debugging easier (though, since IE8 named function expressions are entirely safe).
-  
-  > Function expressions are suitable for functional scenarios such as function passing (e.g., in higher order functions). They're also necessary for creation of immediately invoked function expressions
 
     ```javascript
+    // function declaration used to hide implementation detail    
     export default foo(x);
-    
-    // function declaration used to hide implementation detail
     const foo function () {/*/..*/};
-
-    // function expression used in higher order function (in this case an arrow functions)
-    function foo() {
-    }
     ```
+  
+  > Function expressions are suitable for more functional situations like function passing (e.g., in higher order functions). They're also necessary for creation of immediately invoked function expressions
 
-  - [7.2](#7.2) <a name='7.2'></a> Function expressions:
 
     ```javascript
-    // immediately-invoked function expression (IIFE)
+    // a function expression used in higher order function (in this case an [arrow function](#8.1))
+    const squares = arr.map(x => x*x);
+
+    // an immediately-invoked function expression (IIFE)
     (() => {
       console.log('Welcome to the Internet. Please follow me.');
     })();
@@ -400,45 +397,47 @@ with this, you would get nowhere fast.`;
     ```
 
   <a name="es6-rest"></a>
-  - [7.6](#7.6) <a name='7.6'></a> Never use `arguments`, opt to use rest syntax `...` instead.
-
-  > Why? `...` is explicit about which arguments you want pulled. Plus rest arguments are a real Array and not Array-like like `arguments`.
+  - [7.6](#7.6) <a name='7.6'></a> You rarely need to use `arguments` in ES6, you can use rest syntax `...` instead.
 
     ```javascript
-    // bad
+    // es 5
     function concatenateAll() {
       const args = Array.prototype.slice.call(arguments);
       return args.join('');
     }
 
-    // good
+    // es 6
     function concatenateAll(...args) {
       return args.join('');
     }
     ```
-
-  <a name="es6-default-parameters"></a>
-  - [7.7](#7.7) <a name='7.7'></a> Use default parameter syntax rather than mutating function arguments.
+    
+  Occasionally it can still be useful to reference `arguments` in ES6. e.g.to quickly see how many parameters were passed:
 
     ```javascript
-    // really bad
+    // easier
+    function doTheThing(a, b, ...args) {
+      parameterCount = arguments.length; // always right
+    }
+    
+    // riskier
+    function doTheThing(a, b, ...args) {
+      parameterCount = 2 + args.length; // wrong if signature changes
+    }
+    
+    ```  
+
+  <a name="es6-default-parameters"></a>
+  - [7.7](#7.7) <a name='7.7'></a> Use default parameter syntax.
+
+    ```javascript
+    // es 5
     function handleThings(opts) {
-      // No! We shouldn't mutate function arguments.
-      // Double bad: if opts is falsy it'll be set to an object which may
-      // be what you want but it can introduce subtle bugs.
-      opts = opts || {};
+      opts || (opts = {});
       // ...
     }
 
-    // still bad
-    function handleThings(opts) {
-      if (opts === void 0) {
-        opts = {};
-      }
-      // ...
-    }
-
-    // good
+    // es 6
     function handleThings(opts = {}) {
       // ...
     }
@@ -460,43 +459,42 @@ with this, you would get nowhere fast.`;
   count();  // 3
   ```
 
-
 **[⬆ back to top](#table-of-contents)**
 
 ## Arrow Functions
 
-  - [8.1](#8.1) <a name='8.1'></a> When you must use function expressions (as when passing an anonymous function), use arrow function notation.
+  - [8.1](#8.1) <a name='8.1'></a> Use arrow function notation as a shorthand for function expressions
 
-  > Why? It creates a version of the function that executes in the context of `this`, which is usually what you want, and is a more concise syntax.
-
-  > Why not? If you have a fairly complicated function, you might move that logic out into its own function declaration.
+  > Note: the `this` value in an arrow functions is the same as the `this` value of the lexical parent. While thsi is often useful, the behavior differs from all other function syntaxes.
 
     ```javascript
-    // bad
+    // es 5
     [1, 2, 3].map(function (x) {
       return x * x;
     });
 
-    // good
+    // es 6
     [1, 2, 3].map((x) => {
       return x * x;
     });
     ```
 
-  - [8.2](#8.2) <a name='8.2'></a> If the function body fits on one line and there is only a single argument, feel free to omit the braces and parentheses, and use the implicit return. Otherwise, add the parentheses, braces, and use a `return` statement.
-
-  > Why? Syntactic sugar. It reads well when multiple functions are chained together.
-
-  > Why not? If you plan on returning an object.
+  - [8.2](#8.2) <a name='8.2'></a> If the function body fits on one line it's ok to leave out curly braces. If there is only one statement there is no need for an explicit return statement. If there is one and only one argument there are no need for parentheses.
 
     ```javascript
-    // good
+    // one liner, one statement, one arg.
     [1, 2, 3].map(x => x * x);
 
-    // good
+    // multi-liner, one statement, multi-arg
     [1, 2, 3].reduce((total, n) => {
-      return total + n;
+      total + n;
     }, 0);
+    
+    // multi-liner, multi-statement, multi-arg
+    [1, 2, 3].reduce((total, n) => {
+      doThisThingFirst();
+      return total + n;
+    }, 0);    
     ```
 
 **[⬆ back to top](#table-of-contents)**
@@ -504,31 +502,25 @@ with this, you would get nowhere fast.`;
 
 ## Constructors
 
-  - [9.1](#9.1) <a name='9.1'></a> Always use `class`. Avoid manipulating `prototype` directly.
-
-  > Why? `class` syntax is more concise and easier to reason about.
+  - [9.1](#9.1) <a name='9.1'></a> Use `class` syntax in place of constructor syntax.
 
     ```javascript
-    // bad
+    // es 5
     function Queue(contents = []) {
       this._queue = [...contents];
     }
     Queue.prototype.pop = function() {
-      const value = this._queue[0];
-      this._queue.splice(0, 1);
-      return value;
+      return this._queue.pop();
     }
 
 
-    // good
+    // es 6
     class Queue {
       constructor(contents = []) {
         this._queue = [...contents];
       }
       pop() {
-        const value = this._queue[0];
-        this._queue.splice(0, 1);
-        return value;
+        return this._queue.pop();
       }
     }
     ```
