@@ -91,7 +91,7 @@
       a = 2;
     } else {
       a = 3;
-    }  
+    }
 
     // not to be reassigned
     const global = window;
@@ -117,7 +117,7 @@
   - [3.1](#3.1) <a name='3.1'></a> Use the literal syntax for object creation.
 
     ```javascript
-    // unecessary
+    // unnecessary
     const item = new Object();
 
     // easier
@@ -190,7 +190,7 @@
 
 ## Arrays
 
-  - [4.1](#4.1) <a name='4.1'></a> It's generally easier to use the literal syntax for array creation. 
+  - [4.1](#4.1) <a name='4.1'></a> It's generally easier to use the literal syntax for array creation.
 
     ```javascript
     // occasionally you may need to create an empty array of fixed length
@@ -205,7 +205,7 @@
     ```javascript
     const someStack = [];
 
-    // unecessary
+    // unnecessary
     someStack[someStack.length] = 'abracadabra';
 
     // easier
@@ -344,11 +344,11 @@ with this, you would get nowhere fast.`;
   > Because function declarations are hoisted they are a great way to hide implementation detail at the bottom of the page. They're also named which makes debugging easier (though, since IE8 named function expressions are entirely safe).
 
     ```javascript
-    // function declaration used to hide implementation detail    
+    // function declaration used to hide implementation detail
     export default foo(x);
     const foo function () {/*/..*/};
     ```
-  
+
   > Function expressions are suitable for more functional situations like function passing (e.g., in higher order functions). They're also necessary for creation of immediately invoked function expressions
 
 
@@ -411,7 +411,7 @@ with this, you would get nowhere fast.`;
       return args.join('');
     }
     ```
-    
+
   Occasionally it can still be useful to reference `arguments` in ES6. e.g.to quickly see how many parameters were passed:
 
     ```javascript
@@ -419,13 +419,13 @@ with this, you would get nowhere fast.`;
     function doTheThing(a, b, ...args) {
       parameterCount = arguments.length; // always right
     }
-    
+
     // riskier
     function doTheThing(a, b, ...args) {
       parameterCount = 2 + args.length; // wrong if signature changes
     }
-    
-    ```  
+
+    ```
 
   <a name="es6-default-parameters"></a>
   - [7.7](#7.7) <a name='7.7'></a> Use default parameter syntax.
@@ -465,7 +465,7 @@ with this, you would get nowhere fast.`;
 
   - [8.1](#8.1) <a name='8.1'></a> Use arrow function notation as a shorthand for function expressions
 
-  > Note: the `this` value in an arrow functions is the same as the `this` value of the lexical parent. While thsi is often useful, the behavior differs from all other function syntaxes.
+  > Note: the `this` value in an arrow functions is the same as the `this` value of the lexical parent. While this is often useful, the behavior differs from all other function syntaxes.
 
     ```javascript
     // es 5
@@ -489,12 +489,12 @@ with this, you would get nowhere fast.`;
     [1, 2, 3].reduce((total, n) => {
       total + n;
     }, 0);
-    
+
     // multi-liner, multi-statement, multi-arg
     [1, 2, 3].reduce((total, n) => {
       doThisThingFirst();
       return total + n;
-    }, 0);    
+    }, 0);
     ```
 
 **[⬆ back to top](#table-of-contents)**
